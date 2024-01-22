@@ -1,0 +1,38 @@
+name: SDK integration tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  integration_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+
+      - name: Run the SDK testserver
+        run: |
+          docker run -d -p 1090:1090 friendlycaptcha/sdk-testserver:latest
+          echo "SDK Test server started. Checking its health..."
+          for i in {1..20}; do
+            if curl -s http://localhost:1090; then
+              echo "SDK test server is responding!"
+              break
+            else
+              echo "Attempt $i: SDK test server not yet responding. Waiting for 1 second..."
+              sleep 1
+            fi
+          done
+
+      - name: Run golang SDK integration tests
+        run: |
+          go test -v -tags=sdkintegration ./...
