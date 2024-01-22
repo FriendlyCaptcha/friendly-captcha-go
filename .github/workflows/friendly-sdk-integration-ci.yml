@@ -34,6 +34,5 @@ jobs:
           done
 
       - name: Run golang SDK integration tests
-        working-directory: api/friendly-service/pkg/friendly-captcha-go-sdk
         run: |
           go test -v -tags=sdkintegration ./...
