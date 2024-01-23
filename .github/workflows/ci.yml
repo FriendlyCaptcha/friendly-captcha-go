@@ -23,7 +23,7 @@ jobs:
         run: if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then exit 1; fi
       
       - name: vet
-        run: if [ "$(go vet ./...)" -gt 0 ]; then exit 1; fi
+        run: if [ "$(go vet ./... | wc -l)" -gt 0 ]; then exit 1; fi
 
       - name: Run the SDK testserver
         run: |
