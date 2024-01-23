@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  integration_test:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,6 +18,12 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: 1.21
+
+      - name: Format
+        run: if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then exit 1; fi
+      
+      - name: vet
+        run: if [ "$(go vet ./...)" -gt 0 ]; then exit 1; fi
 
       - name: Run the SDK testserver
         run: |
