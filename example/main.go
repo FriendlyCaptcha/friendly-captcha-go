@@ -39,7 +39,11 @@ func main() {
 	if siteverifyEndpoint != "" {
 		opts = append(opts, friendlycaptcha.WithSiteverifyEndpoint(siteverifyEndpoint)) // optional, defaults to "global"
 	}
-	frcClient := friendlycaptcha.NewClient(opts...)
+	frcClient, err := friendlycaptcha.NewClient(opts...)
+	if err != nil {
+		log.Fatalf("Failed to create Friendly Captcha client: %s", err)
+	}
+
 	tmpl := template.Must(template.ParseFiles("demo.html"))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -105,7 +109,7 @@ func main() {
 			return
 		}
 	})
-	log.Printf("Starting server on localhost port 8844 (http://localhost:8844)")
 
+	log.Printf("Starting server on localhost port 8844 (http://localhost:8844)")
 	http.ListenAndServe(":8844", nil)
 }

@@ -1,10 +1,11 @@
 package friendlycaptcha
 
 import (
+	"fmt"
 	"net/http"
 )
 
-type ClientOption func(*Client)
+type ClientOption func(*Client) error
 
 // A client for the Friendly Captcha API, see also the API docs at https://developer.friendlycaptcha.com
 type Client struct {
@@ -31,7 +32,7 @@ const (
 	euSiteverifyEndpointURL     = "https://eu.frcapi.com/api/v2/captcha/siteverify"
 )
 
-func NewClient(opts ...ClientOption) *Client {
+func NewClient(opts ...ClientOption) (*Client, error) {
 	const (
 		defaultSiteverifyEndpoint = globalSiteverifyEndpointURL
 	)
@@ -43,27 +44,31 @@ func NewClient(opts ...ClientOption) *Client {
 
 	// Loop through each option
 	for _, opt := range opts {
-		// Call the option giving the instantiated
-		// *Client as the argument
-		opt(c)
+		// Call the option giving the instantiated *Client as the argument
+		err := opt(c)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if c.APIKey == "" {
-		panic("You must set your Friendly Captcha APIKey using `WithAPIKey()` when creating a new client")
+		return nil, fmt.Errorf("you must set your Friendly Captcha API key using `WithAPIKey()` when creating a new client")
 	}
 
-	return c
+	return c, nil
 }
 
 func WithAPIKey(apiKey string) ClientOption {
-	return func(c *Client) {
+	return func(c *Client) error {
 		c.APIKey = apiKey
+		return nil
 	}
 }
 
 func WithSitekey(sitekey string) ClientOption {
-	return func(c *Client) {
+	return func(c *Client) error {
 		c.Sitekey = sitekey
+		return nil
 	}
 }
 
@@ -71,8 +76,9 @@ func WithSitekey(sitekey string) ClientOption {
 //
 // This defaults to `false`.
 func WithStrictMode(strict bool) ClientOption {
-	return func(c *Client) {
+	return func(c *Client) error {
 		c.Strict = strict
+		return nil
 	}
 }
 
@@ -84,7 +90,8 @@ func WithSiteverifyEndpoint(siteverifyEndpoint string) ClientOption {
 		siteverifyEndpoint = euSiteverifyEndpointURL
 	}
 
-	return func(c *Client) {
+	return func(c *Client) error {
 		c.SiteverifyEndpoint = siteverifyEndpoint
+		return nil
 	}
 }
