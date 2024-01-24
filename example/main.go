@@ -29,7 +29,7 @@ func main() {
 	widgetEndpoint := os.Getenv("FRC_WIDGET_ENDPOINT")
 
 	if sitekey == "" || apikey == "" {
-		log.Fatalf("Please set the FRC_SITEKEY and FRC_APIKEY environment values before running this example to your Friendly Captcha sitekey and apikey respectively.")
+		log.Fatalf("Please set the FRC_SITEKEY and FRC_APIKEY environment values before running this example to your Friendly Captcha sitekey and API key respectively.")
 	}
 
 	opts := []friendlycaptcha.ClientOption{
@@ -51,7 +51,8 @@ func main() {
 				WidgetEndpoint: widgetEndpoint,
 			})
 			if err != nil {
-				log.Fatal("erorr executing template: ", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
 			}
 			return
 		}
@@ -85,13 +86,14 @@ func main() {
 				WidgetEndpoint: widgetEndpoint,
 			})
 			if err != nil {
-				log.Fatal("erorr executing template: ", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
 			}
 			return
 		}
 
 		// The captcha was OK, process the form.
-		_ = form
+		_ = form // Normally we would use the form data here and submit it to our database.
 
 		err := tmpl.Execute(w, templateData{
 			Message:        "✅ Your message has been submitted successfully.",
@@ -99,11 +101,11 @@ func main() {
 			WidgetEndpoint: widgetEndpoint,
 		})
 		if err != nil {
-			log.Fatal("erorr executing template: ", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 	})
 	log.Printf("Starting server on localhost port 8844 (http://localhost:8844)")
 
-	//nolint:errcheck,gosec // this is an example
 	http.ListenAndServe(":8844", nil)
 }
