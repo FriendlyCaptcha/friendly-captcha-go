@@ -68,12 +68,15 @@ func TestSDKWithMockServer(t *testing.T) {
 
 	for _, test := range testsFile.Tests {
 		t.Run(test.Name, func(t *testing.T) {
-			frcClient := NewClient(
+			frcClient, err := NewClient(
 				WithAPIKey("YOUR_API_KEY"),
 				WithSitekey("YOUR_SITE_KEY"),
 				WithSiteverifyEndpoint(MockServerURL+SiteverifyEndpoint),
 				WithStrictMode(test.Strict),
 			)
+			if err != nil {
+				t.Fatalf("failed to create Friendly Captcha client: %v", err)
+			}
 			result := frcClient.VerifyCaptchaResponse(context.TODO(), test.Response)
 
 			shouldAccept := result.ShouldAccept()
