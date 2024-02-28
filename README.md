@@ -4,8 +4,6 @@ A Go client for the [Friendly Captcha](https://friendlycaptcha.com) service. Thi
 
 > This library is for [Friendly Captcha V2](https://developer.friendlycaptcha.com) only. If you are looking for V1, look [here](https://docs.friendlycaptcha.com)
 
-**This is the library you use in your backend code**. For the code that you use in your frontend, see [@friendlycaptcha/sdk](https://github.com/FriendlyCaptcha/friendly-captcha-sdk).
-
 ## Installation
 
 ```shell
