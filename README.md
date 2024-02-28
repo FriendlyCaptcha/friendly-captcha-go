@@ -85,7 +85,7 @@ The client offers several configuration options:
 - **WithAPIKey**: Your Friendly Captcha API key.
 - **WithSitekey**: Your Friendly Captcha sitekey.
 - **WithStrictMode**: (Optional) In case the client was not able to verify the captcha response at all (for example if there is a network failure or a mistake in configuration), by default the `VerifyCaptchaResponse` returns `True` regardless. By passing `WithStrictMode(true)`, it will return `false` instead: every response needs to be strictly verified.
-- **WithSiteverifyEndpoint**: (Optional) The endpoint URL for the site verification API.
+- **WithSiteverifyEndpoint**: (Optional) The endpoint URL for the site verification API. Shorthands `eu` or `global` are also accepted. Default is `global`.
 
 ## Development
 
