@@ -21,7 +21,7 @@ jobs:
 
       - name: Format
         run: if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then exit 1; fi
-      
+
       - name: vet
         run: if [ "$(go vet ./... | wc -l)" -gt 0 ]; then exit 1; fi
 
