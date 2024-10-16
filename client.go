@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// A ClientOption is a function that can be passed to NewClient to configure a new Client.
 type ClientOption func(*Client) error
 
 // A client for the Friendly Captcha API, see also the API docs at https://developer.friendlycaptcha.com
@@ -32,6 +33,7 @@ const (
 	euSiteverifyEndpointURL     = "https://eu.frcapi.com/api/v2/captcha/siteverify"
 )
 
+// NewClient creates a new Friendly Captcha client with the given options.
 func NewClient(opts ...ClientOption) (*Client, error) {
 	const (
 		defaultSiteverifyEndpoint = globalSiteverifyEndpointURL
@@ -52,12 +54,15 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 	}
 
 	if c.APIKey == "" {
-		return nil, fmt.Errorf("you must set your Friendly Captcha API key using `WithAPIKey()` when creating a new client")
+		return nil, fmt.Errorf(
+			"you must set your Friendly Captcha API key using `WithAPIKey()` when creating a new client",
+		)
 	}
 
 	return c, nil
 }
 
+// WithAPIKey sets the API key for the client.
 func WithAPIKey(apiKey string) ClientOption {
 	return func(c *Client) error {
 		c.APIKey = apiKey
@@ -65,6 +70,7 @@ func WithAPIKey(apiKey string) ClientOption {
 	}
 }
 
+// WithSitekey sets the sitekey for the client. This is optional.
 func WithSitekey(sitekey string) ClientOption {
 	return func(c *Client) error {
 		c.Sitekey = sitekey
@@ -82,15 +88,16 @@ func WithStrictMode(strict bool) ClientOption {
 	}
 }
 
-// Takes a full URL, or the shorthands `"global"` or `"eu"` .
+// Takes a full URL, or the shorthands `"global"` or `"eu"`.
 func WithSiteverifyEndpoint(siteverifyEndpoint string) ClientOption {
-	if siteverifyEndpoint == "global" {
-		siteverifyEndpoint = globalSiteverifyEndpointURL
-	} else if siteverifyEndpoint == "eu" {
-		siteverifyEndpoint = euSiteverifyEndpointURL
-	}
-
 	return func(c *Client) error {
+		if siteverifyEndpoint == "global" {
+			siteverifyEndpoint = globalSiteverifyEndpointURL
+		} else if siteverifyEndpoint == "eu" {
+			siteverifyEndpoint = euSiteverifyEndpointURL
+		} else if siteverifyEndpoint == "" {
+			return fmt.Errorf("siteverifyEndpoint must not be empty")
+		}
 		c.SiteverifyEndpoint = siteverifyEndpoint
 		return nil
 	}
