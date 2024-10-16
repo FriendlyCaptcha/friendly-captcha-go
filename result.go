@@ -5,10 +5,14 @@ import (
 	"fmt"
 )
 
+// VerifyResult wraps the response from the Friendly Captcha API when verifying a captcha, making it easier
+// to work with. In the simplest case, you can just check `ShouldAccept` to see if the captcha was solved correctly or
+// if you should accept it anyway (e.g. because the API was down).
 type VerifyResult struct {
+	// Success is true if the captcha was solved correctly.
 	Success bool
 
-	// HTTP Response status code
+	// Status is the HTTP Response status code of the request to the Friendly Captcha API.
 	Status int
 
 	response VerifyResponse
@@ -31,6 +35,9 @@ func (r VerifyResult) Strict() bool {
 	return r.strict
 }
 
+// ShouldAccept returns true if you should allow the request to pass through.
+// It is possible that verification wasn't possible, perhaps the API is unavailable. In that case this function will
+// also return true, unless you enable `strict` mode for the client.
 func (r VerifyResult) ShouldAccept() bool {
 	if r.WasAbleToVerify() {
 		return r.response.Success
@@ -39,15 +46,25 @@ func (r VerifyResult) ShouldAccept() bool {
 		if r.strict { // If Strict mode is enabled, we do not accept any captcha if there was an error.
 			return false
 		}
-		if errors.Is(r.err, ErrVerificationRequest) || errors.Is(r.err, ErrVerificationFailedDueToClientError) { // Failure to talk to Friendly Captcha verification API or client error (e.g. wrong API key)
+		if errors.Is(r.err, ErrVerificationRequest) ||
+			errors.Is(
+				r.err,
+				ErrVerificationFailedDueToClientError,
+			) { // Failure to talk to Friendly Captcha verification API or client error (e.g. wrong API key)
 			return true
 		}
 		return false
 	}
 
-	panic("Implementation error in friendly-captcha-go-sdk ShouldAccept: error should never be nil if success is false. " + fmt.Sprintf("%+v", r))
+	panic(
+		"Implementation error in friendly-captcha-go ShouldAccept: error should never be nil if success is false. " + fmt.Sprintf(
+			"%+v",
+			r,
+		),
+	)
 }
 
+// ShouldReject is the inverse of ShouldAccept.
 func (r VerifyResult) ShouldReject() bool {
 	return !r.ShouldAccept()
 }
@@ -66,14 +83,19 @@ func (r VerifyResult) IsErrorDueToClientError() bool {
 	return r.err != nil && errors.Is(r.err, ErrVerificationFailedDueToClientError)
 }
 
+// Response returns the response from the Friendly Captcha API.
 func (r VerifyResult) Response() VerifyResponse {
 	return r.response
 }
 
+// HTTPStatusCode returns the HTTP status code of the response from the Friendly Captcha API.
 func (r VerifyResult) HTTPStatusCode() int {
 	return r.Status
 }
 
+// WasAbleToVerify returns true if the captcha could be verified. If this is false, you should log the reason why
+// and investigate (you can retrieve the error using the `RequestError` method). The `IsErrorDueToClientError` method
+// will tell you if the error was due to a client error (e.g. wrong API key) - which will require your action to fix.
 func (r VerifyResult) WasAbleToVerify() bool {
 	return r.Status == 200 && !r.IsRequestError()
 }

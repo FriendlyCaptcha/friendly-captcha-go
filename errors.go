@@ -12,8 +12,11 @@ var ErrVerificationRequest = errors.New("verification request failed talking to 
 // This error signifies a non-200 response from the server. Usually this means that your API key was wrong.
 // You should notify yourself if this happens, but it's usually still a good idea to accept the captcha even though
 // we were unable to verify it: we don't want to lock users out.
-var ErrVerificationFailedDueToClientError = errors.New("verification request failed due to a client error (check your credentials)")
+var ErrVerificationFailedDueToClientError = errors.New(
+	"verification request failed due to a client error (check your credentials)",
+)
 
+// ErrorCode is an error code that the Friendly Captcha API can return.
 type ErrorCode string
 
 const (
