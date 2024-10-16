@@ -22,6 +22,18 @@ type VerifyResult struct {
 	err error
 }
 
+// NewVerifyResult returns a new VerifyResult with the given response, status code, strict mode and error.
+// This is generally only useful if you want to create a VerifyResult manually for testing purposes.
+func NewVerifyResult(response VerifyResponse, status int, strict bool, err error) VerifyResult {
+	return VerifyResult{
+		Success:  response.Success,
+		Status:   status,
+		response: response,
+		strict:   strict,
+		err:      err,
+	}
+}
+
 // RequestError returns the error, if any (nil otherwise).
 func (r VerifyResult) RequestError() error {
 	return r.err

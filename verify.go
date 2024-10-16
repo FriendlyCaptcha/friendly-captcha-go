@@ -8,18 +8,6 @@ import (
 	"net/http"
 )
 
-// NewVerifyResult creates a new VerifyResult with the given response, status code, strict mode and error.
-// This is generally only useful if you want to create a VerifyResult manually for testing purposes.
-func NewVerifyResult(response VerifyResponse, status int, strict bool, err error) VerifyResult {
-	return VerifyResult{
-		Success:  response.Success,
-		Status:   status,
-		response: response,
-		strict:   strict,
-		err:      err,
-	}
-}
-
 // VerifyCaptchaResponse takes a captcha response and verifies it with the Friendly Captcha API.
 // It returns a VerifyResult, which contains the result of the verification.
 //
