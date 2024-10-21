@@ -38,7 +38,7 @@ func (frc *Client) VerifyCaptchaResponse(ctx context.Context, captchaResponse st
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Api-Key", frc.APIKey)
-	req.Header.Set("X-Frc-Sdk", fmt.Sprintf("friendly-captcha-go@%s", Version))
+	req.Header.Set("Frc-Sdk", fmt.Sprintf("friendly-captcha-go@%s", Version))
 
 	resp, err := frc.HTTPClient.Do(req)
 	if err != nil {
