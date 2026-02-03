@@ -29,7 +29,7 @@ func (frc *Client) VerifyCaptchaResponse(ctx context.Context, captchaResponse st
 		return result
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, frc.SiteverifyEndpoint, bytes.NewReader(reqBodyJSON))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, frc.APIEndpoint+"/api/v2/captcha/siteverify", bytes.NewReader(reqBodyJSON))
 	if err != nil {
 		result.err = fmt.Errorf("%w: %v", ErrCreatingVerificationRequest, err)
 		return result
