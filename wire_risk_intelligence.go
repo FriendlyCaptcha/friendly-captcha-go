@@ -385,9 +385,6 @@ type ClientAutomationToolData struct {
 // Available when the Bot Detection module is enabled.
 // Null when the Bot Detection module is not enabled.
 type ClientAutomationData struct {
-	// Headless indicates whether the browser was detected as running in headless mode.
-	Headless bool `json:"headless"`
-
 	// AutomationTool contains detected automation tool information.
 	AutomationTool ClientAutomationToolData `json:"automation_tool"`
 
