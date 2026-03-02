@@ -96,7 +96,7 @@ type RiskIntelligenceRetrieveRequest struct {
 type RiskIntelligenceRetrieveDetails struct {
 	// Timestamp when the token was generated.
 	Timestamp time.Time `json:"timestamp"`
-	// Time when the token expires.
+	// Timestamp when the token expires.
 	ExpiresAt time.Time `json:"expires_at"`
 	// Number of times the token has been used.
 	NumUses int64 `json:"num_uses"`
