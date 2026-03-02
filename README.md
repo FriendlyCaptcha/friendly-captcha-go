@@ -14,7 +14,7 @@ go get github.com/friendlycaptcha/friendly-captcha-go
 
 Below are some basic examples of how to use the client.
 
-For a more detailed examples, take a look at the [example](./example) directory.
+For more detailed examples, take a look at the [example](./example) directory.
 
 ### Initialization
 
