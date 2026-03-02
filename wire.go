@@ -86,3 +86,36 @@ type VerifyResponse struct {
 	// This field is only present when the success field is false.
 	Error *VerifyResponseError `json:"error,omitempty"`
 }
+
+// RiskIntelligenceRetrieveRequest is the request body for the /api/v2/riskIntelligence/retrieve endpoint.
+type RiskIntelligenceRetrieveRequest struct {
+	Token string `json:"token"`
+}
+
+// RiskIntelligenceRetrieveDetails is metadata about the risk intelligence token in a retrieve response.
+type RiskIntelligenceRetrieveDetails struct {
+	// Timestamp when the token was generated.
+	Timestamp time.Time `json:"timestamp"`
+	// Time when the token expires.
+	ExpiresAt time.Time `json:"expires_at"`
+	// Number of times the token has been used.
+	NumUses int64 `json:"num_uses"`
+}
+
+// RiskIntelligenceRetrieveResponseData is the data field in a successful retrieve response.
+type RiskIntelligenceRetrieveResponseData struct {
+	// RiskIntelligence contains risk information extracted from the provided token.
+	RiskIntelligence null.Value[RiskIntelligenceData] `json:"risk_intelligence"`
+	// Details contains metadata about the token used for retrieval.
+	Details RiskIntelligenceRetrieveDetails `json:"details"`
+}
+
+// RiskIntelligenceRetrieveResponse is the response body for the /api/v2/riskIntelligence/retrieve endpoint.
+type RiskIntelligenceRetrieveResponse struct {
+	Success bool `json:"success"`
+
+	// This field is only present when the success field is true.
+	Data *RiskIntelligenceRetrieveResponseData `json:"data,omitempty"`
+	// This field is only present when the success field is false.
+	Error *VerifyResponseError `json:"error,omitempty"`
+}
