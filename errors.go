@@ -39,6 +39,8 @@ const (
 	ErrorCodeSitekeyInvalid ErrorCode = "sitekey_invalid"
 	// (400) The response field is missing in your request.
 	ErrorCodeResponseMissing ErrorCode = "response_missing"
+	// (400) The risk intelligence token is missing in your request.
+	ErrorCodeTokenMissing ErrorCode = "token_missing"
 	// (400) The risk intelligence token has expired.
 	ErrorCodeTokenExpired ErrorCode = "token_expired"
 
