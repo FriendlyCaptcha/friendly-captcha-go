@@ -78,19 +78,6 @@
         .token-details {
             margin: 0 0 1rem;
         }
-
-        .token-details pre {
-            margin-top: 0.5rem;
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-            word-break: break-word;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
     </style>
 
     <script type="module" src="https://cdn.jsdelivr.net/npm/@friendlycaptcha/sdk/site.min.js" async defer></script>
@@ -107,39 +94,37 @@
         <p class="message">{{.Message}}</p>
         {{end}}
 
-        <div class="grid">
-            <section>
-                <h2>Form</h2>
-                <p>Risk Intelligence token generation starts automatically. Submit to retrieve the data server-side.</p>
+        <section>
+            <h2>Form</h2>
+            <p>Risk Intelligence token generation starts automatically. Submit to retrieve the data server-side.</p>
 
-                <form method="POST">
-                    <div class="frc-risk-intelligence" data-sitekey="{{.Sitekey}}" data-start="auto" {{if
-                        .AgentEndpoint}}data-api-endpoint="{{.AgentEndpoint}}" {{end}}></div>
+            <form method="POST">
+                <div class="frc-risk-intelligence" data-sitekey="{{.Sitekey}}" data-start="auto" {{if
+                    .AgentEndpoint}}data-api-endpoint="{{.AgentEndpoint}}" {{end}}></div>
 
-                    <button type="submit">Retrieve Risk Intelligence</button>
-                    <button id="regenerate-token-btn" type="button">Regenerate Token</button>
-                </form>
+                <button type="submit">Retrieve Risk Intelligence</button>
+                <button id="regenerate-token-btn" type="button">Regenerate Token</button>
+            </form>
 
-                <div id="ri-status" class="status">waiting for token...</div>
-                <details id="ri-token-details" class="token-details">
-                    <summary>Show token</summary>
-                    <pre id="ri-token-value">No token generated yet.</pre>
-                </details>
+            <div id="ri-status" class="status">waiting for token...</div>
+            <details id="ri-token-details" class="token-details">
+                <summary>Show token</summary>
+                <pre id="ri-token-value">No token generated yet.</pre>
+            </details>
 
-                <h2>Server Response</h2>
-                <p><strong>HTTP status:</strong> {{.RequestStatus}}</p>
-                {{if .RiskToken}}
-                <p><strong>Generated at:</strong> {{.TokenTimestamp}}</p>
-                <p><strong>Expires at:</strong> {{.TokenExpiresAt}}</p>
-                <p><strong>Uses:</strong> {{.TokenNumUses}}</p>
-                {{end}}
+            <h2>Server Response</h2>
+            <p><strong>HTTP status:</strong> {{.RequestStatus}}</p>
+            {{if .RiskToken}}
+            <p><strong>Generated at:</strong> {{.TokenTimestamp}}</p>
+            <p><strong>Expires at:</strong> {{.TokenExpiresAt}}</p>
+            <p><strong>Uses:</strong> {{.TokenNumUses}}</p>
+            {{end}}
 
-                {{if .RiskIntelligenceRaw}}
-                <h3>risk_intelligence JSON</h3>
-                <pre>{{.RiskIntelligenceRaw}}</pre>
-                {{end}}
-            </section>
-        </div>
+            {{if .RiskIntelligenceRaw}}
+            <h3>risk_intelligence JSON</h3>
+            <pre>{{.RiskIntelligenceRaw}}</pre>
+            {{end}}
+        </section>
     </main>
 
     <script>
