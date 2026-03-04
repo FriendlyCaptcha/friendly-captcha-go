@@ -1,6 +1,6 @@
 # Friendly Captcha Go SDK
 
-A Go client for the [Friendly Captcha](https://friendlycaptcha.com) service. This client allows for easy integration and verification of captcha responses with the Friendly Captcha API.
+A Go client for the [Friendly Captcha](https://friendlycaptcha.com) service. This client allows for easy integration and verification of captcha responses and retrieval of risk intelligence data with the Friendly Captcha API.
 
 > This library is for [Friendly Captcha V2](https://developer.friendlycaptcha.com) only. If you are looking for V1, look [here](https://docs.friendlycaptcha.com)
 
