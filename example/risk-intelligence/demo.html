@@ -203,7 +203,7 @@
 
         riEl?.addEventListener("frc:riskintelligence.complete", (ev) => {
             hasTokenState = true;
-            setStatus(`complete\n token ready\n expiresAt: ${ev.detail.expiresAt.toISOString()}`);
+            setStatus(`complete\n token ready\n expiresAt: ${new Date(ev.detail.expiresAt).toISOString()}`);
             tokenValueEl.textContent = ev.detail.token;
             tokenDetailsEl.open = false;
         });
