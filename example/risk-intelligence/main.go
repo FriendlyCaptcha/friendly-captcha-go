@@ -94,7 +94,7 @@ func main() {
 			// This should never happen since /retrieve should always return
 			// risk intelligence data if the token is valid and request is successful.
 			// But it's good practice to handle it just in case.
-			data.Message = "Token was valid, but risk intelligence data was returned."
+			data.Message = "Token was valid, but risk intelligence data was not returned."
 			data.TokenTimestamp = res.Data.Details.Timestamp.Format(time.RFC3339)
 			data.TokenExpiresAt = res.Data.Details.ExpiresAt.Format(time.RFC3339)
 			data.TokenNumUses = res.Data.Details.NumUses
