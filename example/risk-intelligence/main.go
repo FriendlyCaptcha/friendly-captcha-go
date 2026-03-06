@@ -22,6 +22,7 @@ type templateData struct {
 	TokenTimestamp      string
 	TokenExpiresAt      string
 	TokenNumUses        int64
+	TokenOrigin         string
 	RiskIntelligenceRaw string
 }
 
@@ -95,9 +96,10 @@ func main() {
 			// risk intelligence data if the token is valid and request is successful.
 			// But it's good practice to handle it just in case.
 			data.Message = "Token was valid, but risk intelligence data was not returned."
-			data.TokenTimestamp = res.Data.Details.Timestamp.Format(time.RFC3339)
-			data.TokenExpiresAt = res.Data.Details.ExpiresAt.Format(time.RFC3339)
-			data.TokenNumUses = res.Data.Details.NumUses
+			data.TokenTimestamp = res.Data.Token.Timestamp.Format(time.RFC3339)
+			data.TokenExpiresAt = res.Data.Token.ExpiresAt.Format(time.RFC3339)
+			data.TokenNumUses = res.Data.Token.NumUses
+			data.TokenOrigin = res.Data.Token.Origin
 			renderTemplate(w, tmpl, data)
 			return
 		}
@@ -110,9 +112,10 @@ func main() {
 		}
 
 		data.Message = "Retrieved risk intelligence data successfully."
-		data.TokenTimestamp = res.Data.Details.Timestamp.Format(time.RFC3339)
-		data.TokenExpiresAt = res.Data.Details.ExpiresAt.Format(time.RFC3339)
-		data.TokenNumUses = res.Data.Details.NumUses
+		data.TokenTimestamp = res.Data.Token.Timestamp.Format(time.RFC3339)
+		data.TokenExpiresAt = res.Data.Token.ExpiresAt.Format(time.RFC3339)
+		data.TokenNumUses = res.Data.Token.NumUses
+		data.TokenOrigin = res.Data.Token.Origin
 		data.RiskIntelligenceRaw = string(prettyJSON)
 		renderTemplate(w, tmpl, data)
 	})

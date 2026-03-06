@@ -251,12 +251,19 @@ func TestSDKWithMockServerRiskIntelligenceRetrieve(t *testing.T) {
 
 				assert.Equal(
 					t,
+					exp.EventID,
+					res.EventID,
+					"Event ID does not match expected value",
+				)
+
+				assert.Equal(
+					t,
 					exp.RiskIntelligence,
 					res.RiskIntelligence,
 					"Risk Intelligence data does not match expected value",
 				)
 
-				assert.Equal(t, exp.Details, res.Details, "Retrieve details do not match expected value")
+				assert.Equal(t, exp.Token, res.Token, "Retrieve token does not match expected value")
 
 				if exp.RiskIntelligence.Valid {
 					assert.Equal(
