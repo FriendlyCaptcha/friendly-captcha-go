@@ -89,7 +89,10 @@ type VerifyResponse struct {
 
 // RiskIntelligenceRetrieveRequest is the request body for the /api/v2/riskIntelligence/retrieve endpoint.
 type RiskIntelligenceRetrieveRequest struct {
+	// The token that you want to retrieve risk intelligence for.
 	Token string `json:"token"`
+	// Optional: the sitekey that you want to make sure the token was generated from.
+	Sitekey string `json:"sitekey,omitempty"`
 }
 
 // RiskIntelligenceTokenData is metadata about the risk intelligence token in a retrieve response.

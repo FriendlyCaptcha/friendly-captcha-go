@@ -85,8 +85,9 @@ func main() {
 		}
 
 		res := result.Response()
-		if !res.Success {
-			data.Message = fmt.Sprintf("Risk intelligence retrieve API returned error: %v", res.Error)
+
+		if !result.IsValid() {
+			data.Message = fmt.Sprintf("Risk intelligence token is invalid: %v (%v)", res.Error.Detail, res.Error.ErrorCode)
 			renderTemplate(w, tmpl, data)
 			return
 		}

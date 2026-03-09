@@ -53,6 +53,7 @@ type RiskIntelligenceRetrieveTestCase struct {
 	Token       string `json:"token"`
 	Expectation struct {
 		WasAbleToRetrieve bool `json:"was_able_to_retrieve"`
+		IsValid           bool `json:"is_valid"`
 		IsClientError     bool `json:"is_client_error"`
 	} `json:"expectation"`
 	RetrieveResponse json.RawMessage `json:"retrieve_response"`
@@ -222,6 +223,17 @@ func TestSDKWithMockServerRiskIntelligenceRetrieve(t *testing.T) {
 					"Expected WasAbleToRetrieve to be: %v, got: %v",
 					test.Expectation.WasAbleToRetrieve,
 					result.WasAbleToRetrieve(),
+				),
+			)
+
+			assert.Equal(
+				t,
+				test.Expectation.IsValid,
+				result.IsValid(),
+				fmt.Sprintf(
+					"Expected IsValid to be: %v, got: %v",
+					test.Expectation.IsValid,
+					result.IsValid(),
 				),
 			)
 

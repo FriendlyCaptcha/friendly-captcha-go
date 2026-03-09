@@ -183,7 +183,8 @@ func (frc *Client) VerifyCaptchaResponse(ctx context.Context, captchaResponse st
 func (frc *Client) RetrieveRiskIntelligence(ctx context.Context, token string) RiskIntelligenceRetrieveResult {
 	result := RiskIntelligenceRetrieveResult{}
 	reqBody := RiskIntelligenceRetrieveRequest{
-		Token: token,
+		Token:   token,
+		Sitekey: frc.Sitekey,
 	}
 	// We should never end up with this status code, unless we fail to be able to marshal the request body.
 	result.Status = -1

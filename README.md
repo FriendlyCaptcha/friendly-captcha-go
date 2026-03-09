@@ -88,8 +88,12 @@ if !result.WasAbleToRetrieve() {
     // handle request/client error, inspect result.RequestError()
     return
 }
-// The risk intelligence data is available in the Response() method.
-data := result.Response().Data
+if !result.IsValid() {
+    // handle invalid token, inspect result.Response().Error
+    return
+}
+// The risk intelligence data is available in result.Response().Data.
+data := result.Response().Data.RiskIntelligence
 ```
 
 ### Configuration
@@ -97,7 +101,7 @@ data := result.Response().Data
 The client offers several configuration options:
 
 - **WithAPIKey**: Your Friendly Captcha API key.
-- **WithSitekey**: Your Friendly Captcha sitekey.
+- **WithSitekey**: (Optional) Your Friendly Captcha sitekey. Configure this if you want to ensure that a captcha solution or risk intelligence token was generated from a specific sitekey.
 - **WithStrictMode**: (Optional) In case the client was not able to verify the captcha response at all (for example if there is a network failure or a mistake in configuration), by default the `VerifyCaptchaResponse` returns `True` regardless. By passing `WithStrictMode(true)`, it will return `false` instead: every response needs to be strictly verified.
 - **WithAPIEndpoint**: (Optional) The base API endpoint (used for both captcha verification and risk intelligence retrieval). Shorthands `eu` or `global` are also accepted. Default is `global`.
 

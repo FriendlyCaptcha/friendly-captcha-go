@@ -146,6 +146,14 @@ func (r RiskIntelligenceRetrieveResult) RequestError() error {
 	return r.err
 }
 
+// IsValid returns true if the token used for retrieval is valid and the retrieval succeeded.
+func (r RiskIntelligenceRetrieveResult) IsValid() bool {
+	if r.WasAbleToRetrieve() {
+		return r.response.Success
+	}
+	return false
+}
+
 // IsRequestError returns true if an error occurred while sending the request to the Friendly Captcha API
 // or interpreting its response.
 func (r RiskIntelligenceRetrieveResult) IsRequestError() bool {
