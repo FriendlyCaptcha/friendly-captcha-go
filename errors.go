@@ -16,6 +16,17 @@ var ErrVerificationFailedDueToClientError = errors.New(
 	"verification request failed due to a client error (check your credentials)",
 )
 
+// Could not create the request body (i.e. JSON marshal it), this should never happen.
+var ErrCreatingRiskIntelligenceRetrieveRequest = errors.New("could not create risk intelligence retrieve request body")
+
+// The POST request to the Friendly Captcha API could not be completed for some reason.
+var ErrRiskIntelligenceRetrieveRequest = errors.New("risk intelligence retrieve request failed talking to Friendly Captcha API")
+
+// This error signifies a non-200 response from the server. Usually this means that your API key was wrong.
+var ErrRiskIntelligenceRetrieveFailedDueToClientError = errors.New(
+	"risk intelligence retrieve request failed due to a client error (check your credentials)",
+)
+
 // ErrorCode is an error code that the Friendly Captcha API can return.
 type ErrorCode string
 
@@ -28,6 +39,10 @@ const (
 	ErrorCodeSitekeyInvalid ErrorCode = "sitekey_invalid"
 	// (400) The response field is missing in your request.
 	ErrorCodeResponseMissing ErrorCode = "response_missing"
+	// (400) The risk intelligence token is missing in your request.
+	ErrorCodeTokenMissing ErrorCode = "token_missing"
+	// (400) The risk intelligence token has expired.
+	ErrorCodeTokenExpired ErrorCode = "token_expired"
 
 	// (200) The response field is invalid.
 	ErrorCodeResponseInvalid ErrorCode = "response_invalid"

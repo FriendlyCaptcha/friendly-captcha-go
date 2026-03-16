@@ -1,6 +1,6 @@
 # Friendly Captcha Go SDK
 
-A Go client for the [Friendly Captcha](https://friendlycaptcha.com) service. This client allows for easy integration and verification of captcha responses with the Friendly Captcha API.
+A Go client for the [Friendly Captcha](https://friendlycaptcha.com) service. This client allows for easy integration and verification of captcha responses and retrieval of risk intelligence data with the Friendly Captcha API.
 
 > This library is for [Friendly Captcha V2](https://developer.friendlycaptcha.com) only. If you are looking for V1, look [here](https://docs.friendlycaptcha.com)
 
@@ -12,9 +12,9 @@ go get github.com/friendlycaptcha/friendly-captcha-go
 
 ## Usage
 
-Below are some basic examples of how to use the client.
+Below are basic examples of how to use the client.
 
-For a more detailed example, take a look at the [example](./example) directory.
+For a more detailed end-to-end example (captcha verification + risk intelligence retrieval in one app), take a look at the [example](./example) directory.
 
 ### Initialization
 
@@ -31,7 +31,9 @@ if err != nil {
 }
 ```
 
-### Verifying a Captcha Response
+### Captcha Verification
+
+Use `VerifyCaptchaResponse` for the captcha flow via the siteverify endpoint (`/api/v2/captcha/siteverify`).
 
 After calling `VerifyCaptchaResponse` with the captcha response there are two functions on the result object that you should check:
 
@@ -76,14 +78,32 @@ fmt.Println(result.WasAbleToVerify()) // false
 fmt.Println(result.ShouldAccept()) // false
 ```
 
+### Risk Intelligence Data Retrieval
+
+Call `RetrieveRiskIntelligence` to retrieve risk intelligence data from a token via the retrieve endpoint (`/api/v2/riskIntelligence/retrieve`).
+
+```go
+result := frcClient.RetrieveRiskIntelligence(context.TODO(), "RISK_INTELLIGENCE_TOKEN_HERE")
+if !result.WasAbleToRetrieve() {
+    // handle request/client error, inspect result.RequestError()
+    return
+}
+if !result.IsValid() {
+    // handle invalid token, inspect result.Response().Error
+    return
+}
+// The risk intelligence data is available in result.Response().Data.
+data := result.Response().Data.RiskIntelligence
+```
+
 ### Configuration
 
 The client offers several configuration options:
 
 - **WithAPIKey**: Your Friendly Captcha API key.
-- **WithSitekey**: Your Friendly Captcha sitekey.
+- **WithSitekey**: (Optional) Your Friendly Captcha sitekey. Configure this if you want to ensure that a captcha solution or risk intelligence token was generated from a specific sitekey.
 - **WithStrictMode**: (Optional) In case the client was not able to verify the captcha response at all (for example if there is a network failure or a mistake in configuration), by default the `VerifyCaptchaResponse` returns `True` regardless. By passing `WithStrictMode(true)`, it will return `false` instead: every response needs to be strictly verified.
-- **WithAPIEndpoint**: (Optional) The endpoint for the site verification API. Shorthands `eu` or `global` are also accepted. Default is `global`.
+- **WithAPIEndpoint**: (Optional) The base API endpoint (used for both captcha verification and risk intelligence retrieval). Shorthands `eu` or `global` are also accepted. Default is `global`.
 
 ## Development
 

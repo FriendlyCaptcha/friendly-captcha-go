@@ -86,3 +86,78 @@ type VerifyResponse struct {
 	// This field is only present when the success field is false.
 	Error *VerifyResponseError `json:"error,omitempty"`
 }
+
+// RiskIntelligenceRetrieveRequest is the request body for the /api/v2/riskIntelligence/retrieve endpoint.
+type RiskIntelligenceRetrieveRequest struct {
+	// The token that you want to retrieve risk intelligence for.
+	Token string `json:"token"`
+	// Optional: the sitekey that you want to make sure the token was generated from.
+	Sitekey string `json:"sitekey,omitempty"`
+}
+
+// RiskIntelligenceTokenData is metadata about the risk intelligence token in a retrieve response.
+type RiskIntelligenceTokenData struct {
+	// Timestamp when the token was generated.
+	Timestamp time.Time `json:"timestamp"`
+	// Timestamp when the token expires.
+	ExpiresAt time.Time `json:"expires_at"`
+	// Number of times the token has been used.
+	NumUses int64 `json:"num_uses"`
+	// The origin of the site where the token was generated.
+	Origin string `json:"origin"`
+}
+
+// RiskIntelligenceRetrieveResponseData is the data field in a successful retrieve response.
+type RiskIntelligenceRetrieveResponseData struct {
+	// EventID is a unique identifier for this risk intelligence retrieve call.
+	EventID string `json:"event_id"`
+
+	// Token contains metadata about the token used for retrieval.
+	Token RiskIntelligenceTokenData `json:"token"`
+
+	// RiskIntelligenceRaw contains the raw JSON risk information extracted from the provided token.
+	//
+	// Note this is the raw JSON data, you probably want to use the RiskIntelligence field instead. This field is
+	// available in case you need to access fields that are not yet modeled in the SDK.
+	RiskIntelligenceRaw null.Value[json.RawMessage] `json:"risk_intelligence"`
+
+	// RiskIntelligence contains risk information extracted from the provided token.
+	RiskIntelligence null.Value[RiskIntelligenceData] `json:"-"`
+}
+
+// UnmarshalJSON implements custom JSON unmarshaling for VerifyResponseData.
+// It automatically populates the RiskIntelligence field from RiskIntelligenceRaw.
+func (r *RiskIntelligenceRetrieveResponseData) UnmarshalJSON(data []byte) error {
+	// Use an auxiliary struct to avoid infinite recursion
+	type Alias RiskIntelligenceRetrieveResponseData
+	aux := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(r),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	// Populate RiskIntelligence from RiskIntelligenceRaw
+	if r.RiskIntelligenceRaw.Valid {
+		var riskData RiskIntelligenceData
+		if err := json.Unmarshal(r.RiskIntelligenceRaw.V, &riskData); err != nil {
+			return err
+		}
+		r.RiskIntelligence = null.ValueFrom(riskData)
+	}
+
+	return nil
+}
+
+// RiskIntelligenceRetrieveResponse is the response body for the /api/v2/riskIntelligence/retrieve endpoint.
+type RiskIntelligenceRetrieveResponse struct {
+	Success bool `json:"success"`
+
+	// This field is only present when the success field is true.
+	Data *RiskIntelligenceRetrieveResponseData `json:"data,omitempty"`
+	// This field is only present when the success field is false.
+	Error *VerifyResponseError `json:"error,omitempty"`
+}

@@ -1,6 +1,10 @@
 package friendlycaptcha
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -32,6 +36,10 @@ const ResponseFormFieldName = "frc-captcha-response"
 const (
 	globalAPIEndpoint = "https://global.frcapi.com"
 	euAPIEndpoint     = "https://eu.frcapi.com"
+)
+
+var (
+	errCreateRequest = errors.New("failed to create HTTP request")
 )
 
 // NewClient creates a new Friendly Captcha client with the given options.
@@ -131,4 +139,115 @@ func WithSiteverifyEndpoint(siteverifyEndpoint string) ClientOption {
 
 		return WithAPIEndpoint(apiEndpoint)(c)
 	}
+}
+
+// VerifyCaptchaResponse takes a captcha response and verifies it with the Friendly Captcha API.
+// It returns a VerifyResult, which contains the result of the verification.
+//
+// On this result struct that will allow you to check if the verification could be performed, and whether
+// you should allow the user to proceed.
+func (frc *Client) VerifyCaptchaResponse(ctx context.Context, captchaResponse string) VerifyResult {
+	result := VerifyResult{}
+	reqBody := VerifyRequest{
+		Response: captchaResponse,
+		Sitekey:  frc.Sitekey,
+	}
+	result.strict = frc.Strict
+	result.Status = -1
+
+	var vr VerifyResponse
+	statusCode, err := frc.postJSON(ctx, "/api/v2/captcha/siteverify", reqBody, &vr)
+	result.Status = statusCode
+	if err != nil {
+		if errors.Is(err, errCreateRequest) {
+			result.err = fmt.Errorf("%w: %v", ErrCreatingVerificationRequest, err)
+			return result
+		}
+		result.err = fmt.Errorf("%w: %v", ErrVerificationRequest, err)
+		return result
+	}
+
+	if statusCode != http.StatusOK {
+		// Intentionally let this through, it's probably a problem in our credentials
+		result.err = fmt.Errorf("%w [status %d]: %s", ErrVerificationFailedDueToClientError, statusCode, vr.Error)
+		return result
+	}
+
+	result.response = vr
+	result.Success = vr.Success
+	return result
+}
+
+// RetrieveRiskIntelligence takes a risk intelligence token and retrieves the associated risk intelligence data from the Friendly Captcha API.
+// It returns a RiskIntelligenceRetrieveResult, which contains the risk intelligence data.
+func (frc *Client) RetrieveRiskIntelligence(ctx context.Context, token string) RiskIntelligenceRetrieveResult {
+	result := RiskIntelligenceRetrieveResult{}
+	reqBody := RiskIntelligenceRetrieveRequest{
+		Token:   token,
+		Sitekey: frc.Sitekey,
+	}
+	// We should never end up with this status code, unless we fail to be able to marshal the request body.
+	result.Status = -1
+
+	var retrieveResponse RiskIntelligenceRetrieveResponse
+	statusCode, err := frc.postJSON(ctx, "/api/v2/riskIntelligence/retrieve", reqBody, &retrieveResponse)
+	result.Status = statusCode
+	if err != nil {
+		if errors.Is(err, errCreateRequest) {
+			result.err = fmt.Errorf("%w: %v", ErrCreatingRiskIntelligenceRetrieveRequest, err)
+			return result
+		}
+		result.err = fmt.Errorf("%w: %v", ErrRiskIntelligenceRetrieveRequest, err)
+		return result
+	}
+
+	if statusCode != http.StatusOK {
+		// Intentionally let this through, it's probably a problem in our credentials.
+		result.err = fmt.Errorf(
+			"%w [status %d]: %+v",
+			ErrRiskIntelligenceRetrieveFailedDueToClientError,
+			statusCode,
+			retrieveResponse.Error,
+		)
+		return result
+	}
+
+	result.response = retrieveResponse
+	result.Success = retrieveResponse.Success
+	return result
+}
+
+func (frc *Client) postJSON(ctx context.Context, path string, requestBody any, responseBody any) (int, error) {
+	reqBodyJSON, err := json.Marshal(requestBody)
+	if err != nil {
+		return -1, fmt.Errorf("%w: %v", errCreateRequest, err)
+	}
+
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		frc.APIEndpoint+path,
+		bytes.NewReader(reqBodyJSON),
+	)
+	if err != nil {
+		return -1, fmt.Errorf("%w: %v", errCreateRequest, err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Api-Key", frc.APIKey)
+	req.Header.Set("Frc-Sdk", fmt.Sprintf("friendly-captcha-go@%s", Version))
+
+	resp, err := frc.HTTPClient.Do(req)
+	if err != nil {
+		return -1, fmt.Errorf("error sending HTTP request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	statusCode := resp.StatusCode
+
+	if err := json.NewDecoder(resp.Body).Decode(responseBody); err != nil {
+		return statusCode, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	return statusCode, nil
 }

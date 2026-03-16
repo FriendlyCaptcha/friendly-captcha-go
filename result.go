@@ -111,3 +111,71 @@ func (r VerifyResult) HTTPStatusCode() int {
 func (r VerifyResult) WasAbleToVerify() bool {
 	return r.Status == 200 && !r.IsRequestError()
 }
+
+// RiskIntelligenceRetrieveResult wraps the response from the Friendly Captcha API retrieve endpoint.
+type RiskIntelligenceRetrieveResult struct {
+	// Success is true if the token was valid and data retrieval succeeded.
+	Success bool
+
+	// Status is the HTTP response status code of the request to the Friendly Captcha API.
+	Status int
+
+	response RiskIntelligenceRetrieveResponse
+
+	// The error that occurred during retrieval, if any.
+	err error
+}
+
+// NewRiskIntelligenceRetrieveResult returns a new RiskIntelligenceRetrieveResult.
+// This is generally only useful if you want to create a result manually for testing purposes.
+func NewRiskIntelligenceRetrieveResult(
+	response RiskIntelligenceRetrieveResponse,
+	status int,
+	err error,
+) RiskIntelligenceRetrieveResult {
+	return RiskIntelligenceRetrieveResult{
+		Success:  response.Success,
+		Status:   status,
+		response: response,
+		err:      err,
+	}
+}
+
+// RequestError returns the error, if any (nil otherwise).
+func (r RiskIntelligenceRetrieveResult) RequestError() error {
+	return r.err
+}
+
+// IsValid returns true if the token used for retrieval is valid and the retrieval succeeded.
+func (r RiskIntelligenceRetrieveResult) IsValid() bool {
+	if r.WasAbleToRetrieve() {
+		return r.response.Success
+	}
+	return false
+}
+
+// IsRequestError returns true if an error occurred while sending the request to the Friendly Captcha API
+// or interpreting its response.
+func (r RiskIntelligenceRetrieveResult) IsRequestError() bool {
+	return r.err != nil && errors.Is(r.err, ErrRiskIntelligenceRetrieveRequest)
+}
+
+// IsErrorDueToClientError returns true for non-200 server responses, typically caused by invalid credentials or payload.
+func (r RiskIntelligenceRetrieveResult) IsErrorDueToClientError() bool {
+	return r.err != nil && errors.Is(r.err, ErrRiskIntelligenceRetrieveFailedDueToClientError)
+}
+
+// Response returns the response from the Friendly Captcha API.
+func (r RiskIntelligenceRetrieveResult) Response() RiskIntelligenceRetrieveResponse {
+	return r.response
+}
+
+// HTTPStatusCode returns the HTTP status code of the response from the Friendly Captcha API.
+func (r RiskIntelligenceRetrieveResult) HTTPStatusCode() int {
+	return r.Status
+}
+
+// WasAbleToRetrieve returns true if retrieval succeeded and the server returned HTTP 200.
+func (r RiskIntelligenceRetrieveResult) WasAbleToRetrieve() bool {
+	return r.Status == 200 && !r.IsRequestError()
+}

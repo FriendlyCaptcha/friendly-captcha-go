@@ -1,6 +1,7 @@
 # Friendly Captcha Go Example
 
 This application integrates Friendly Captcha for form submissions using Go.
+It verifies captcha responses and retrieves risk intelligence (if enabled on the application) from the same form flow.
 
 ### Requirements
 
@@ -9,15 +10,15 @@ This application integrates Friendly Captcha for form submissions using Go.
 
 ### Start the application
 
-- Setup env variables and start the application
+- Set environment variables and start the application
 
-> NOTE: `FRC_SITEVERIFY_ENDPOINT` and `FRC_WIDGET_ENDPOINT` are optional. If not set, the default values will be used. You can also use `global` or `eu` as shorthands for both.
+> NOTE: `FRC_API_ENDPOINT` and `FRC_WIDGET_ENDPOINT` are optional. If not set, default values will be used. You can also use `global` or `eu` as shorthands for both.
 
 ```bash
-FRC_APIKEY=<your API key> FRC_SITEKEY=<your sitekey> FRC_SITEVERIFY_ENDPOINT=<siteverify endpoint> FRC_WIDGET_ENDPOINT=<widget endpoint> go run main.go
+FRC_APIKEY=<your API key> FRC_SITEKEY=<your sitekey> FRC_API_ENDPOINT=<api endpoint> FRC_WIDGET_ENDPOINT=<widget endpoint> go run .
 ```
 
-# Usage
+## Usage
 
 Navigate to http://localhost:8844/ in your browser.
-Fill out the form and submit. The Friendly Captcha verification will protect the form from bots.
+Fill out the form and submit. The backend verifies the captcha and also retrieves risk intelligence data when a risk intelligence token is available.
