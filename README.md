@@ -12,9 +12,9 @@ go get github.com/friendlycaptcha/friendly-captcha-go
 
 ## Usage
 
-Below are some basic examples of how to use the client.
+Below are basic examples of how to use the client.
 
-For more detailed examples, take a look at the [example](./example) directory.
+For a more detailed end-to-end example (captcha verification + risk intelligence retrieval in one app), take a look at the [example](./example) directory.
 
 ### Initialization
 
