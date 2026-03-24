@@ -41,8 +41,10 @@ const (
 	ErrorCodeResponseMissing ErrorCode = "response_missing"
 	// (400) The risk intelligence token is missing in your request.
 	ErrorCodeTokenMissing ErrorCode = "token_missing"
-	// (400) The risk intelligence token has expired.
+	// (200) The risk intelligence token has expired.
 	ErrorCodeTokenExpired ErrorCode = "token_expired"
+	// (200) The risk intelligence token is invalid.
+	ErrorCodeTokenInvalid ErrorCode = "token_invalid"
 
 	// (200) The response field is invalid.
 	ErrorCodeResponseInvalid ErrorCode = "response_invalid"
