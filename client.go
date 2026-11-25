@@ -42,6 +42,10 @@ var (
 	errCreateRequest = errors.New("failed to create HTTP request")
 )
 
+// Longer captcha responses are truncated to this before they are sent. It's above the API's request body limit, so
+// the API still answers them as invalid. Truncating keeps the upload short enough to finish before the timeout.
+const maxCaptchaResponseLength = 2 * 1024 * 1024
+
 // NewClient creates a new Friendly Captcha client with the given options.
 func NewClient(opts ...ClientOption) (*Client, error) {
 	const (
@@ -148,6 +152,9 @@ func WithSiteverifyEndpoint(siteverifyEndpoint string) ClientOption {
 // you should allow the user to proceed.
 func (frc *Client) VerifyCaptchaResponse(ctx context.Context, captchaResponse string) VerifyResult {
 	result := VerifyResult{}
+	if len(captchaResponse) > maxCaptchaResponseLength {
+		captchaResponse = captchaResponse[:maxCaptchaResponseLength]
+	}
 	reqBody := VerifyRequest{
 		Response: captchaResponse,
 		Sitekey:  frc.Sitekey,
